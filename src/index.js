@@ -1,15 +1,23 @@
 module.exports = function check(str, bracketsConfig) {
-	let strRez = ''
-	let bracketRez = ''
-	if (str === '') strRez = true
-	let arrStr = str.split('')
-	for (let i = 0; i < arrStr.length; i++) {
-		if (arrStr[i] === "(" && arrStr[i + 1] === ")" || arrStr[i] === "[" && arrStr[i + 1] === "]" || arrStr[i] === "{" && arrStr[i + 1] === "}" || arrStr[i] === arrStr[i + 1]) {
-			arrStr.splice(i, 2)
-			return check(arrStr.join(''), bracketsConfig)
+	if (str.length <= 1)
+		return false
+	let sr, num
+	let stack = []
+	let open = ['[', '{', '(', '|']
+	let close = [']', '}', ')', '|']
+	let bracketRez = '';
+	for (let i = 0; i < str.length; i++) {
+		num = str[i]
+		if (close.indexOf(num) > -1) {
+			sr = open[close.indexOf(num)]
+			if (stack.length == 0 || (stack.pop() != sr)) {
+				return false
+			}
+		} else {
+			stack.push(num)
 		}
-		else strRez = false
-	};
+	}
+	let st = []
 	for (let i = 0; i < bracketsConfig.length; i++) {
 		for (let j = 0; j < bracketsConfig[i].length; j++) {
 			if (bracketsConfig[i][j] === "(" && bracketsConfig[i][j + 1] === ")" || bracketsConfig[i][j] === "[" && bracketsConfig[i][j + 1] === "]" || bracketsConfig[i][j] === "{" && bracketsConfig[i][j + 1] === "}") {
@@ -18,8 +26,9 @@ module.exports = function check(str, bracketsConfig) {
 			if (bracketsConfig[i].length === 0) {
 				bracketRez = true
 			}
-			else bracketRez = false
+			else return false
 		}
 	}
-	return Boolean(strRez * bracketRez)
+	let rez = Boolean(stack.length === 0);
+	return (stack.length === 0);
 }
